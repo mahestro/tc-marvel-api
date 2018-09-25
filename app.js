@@ -10,6 +10,7 @@ var fs = require('fs'),
     mongoose = require('mongoose');
 
 var isProduction = process.env.NODE_ENV === 'production';
+var port = process.env.PORT || 3001;
 
 // Create global app object
 var app = express();
@@ -76,6 +77,6 @@ app.use(function(err, req, res, next) {
 });
 
 // finally, let's start our server...
-var server = app.listen( process.env.PORT || 3001, function(){
+var server = app.listen(port, function(){
   console.log('Listening on port ' + server.address().port);
 });
