@@ -1,9 +1,3 @@
-var isProduction = process.env.NODE_ENV === 'production';
-
-if (!isProduction) {
-  require('dotenv').config({silent: true, path: __dirname + '/.env'});
-}
-
 var fs = require('fs'),
     http = require('http'),
     path = require('path'),
@@ -13,7 +7,9 @@ var fs = require('fs'),
     cors = require('cors'),
     errorhandler = require('errorhandler'),
     mongoose = require('mongoose');
+    require('dotenv').config();
 
+var isProduction = process.env.NODE_ENV === 'production';
 var port = process.env.PORT || 3001;
 
 // Create global app object
