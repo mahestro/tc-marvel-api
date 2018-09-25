@@ -14,7 +14,7 @@ var fs = require('fs'),
     errorhandler = require('errorhandler'),
     mongoose = require('mongoose');
 
-var port = process.env.PORT || 3001;
+var port = process.env.PORT || 3000;
 
 // Create global app object
 var app = express();
