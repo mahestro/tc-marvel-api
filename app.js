@@ -1,8 +1,8 @@
 var isProduction = process.env.NODE_ENV === 'production';
 
-if (!isProduction) {
-  require('dotenv').config({silent: true, path: __dirname + '/.env'});
-}
+// if (!isProduction) {
+//   require('dotenv').config({silent: true, path: __dirname + '/.env'});
+// }
 
 var fs = require('fs'),
     http = require('http'),
@@ -81,6 +81,6 @@ app.use(function(err, req, res, next) {
 });
 
 // finally, let's start our server...
-var server = app.listen(port, function(){
+var server = app.listen(3000, function(){
   console.log('Listening on port ' + server.address().port);
 });
