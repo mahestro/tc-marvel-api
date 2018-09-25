@@ -1,0 +1,32 @@
+{
+  "name": "tc-marvel-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon ./app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": "8.11.2",
+    "npm": "5.6.0"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
+    "body-parser": "1.15.0",
+    "cors": "2.7.1",
+    "dotenv": "2.0.0",
+    "ejs": "2.4.1",
+    "errorhandler": "1.4.3",
+    "express": "4.13.4",
+    "express-session": "1.13.0",
+    "method-override": "2.3.5",
+    "mongoose": "4.4.10",
+    "mongoose-unique-validator": "1.0.2",
+    "morgan": "1.7.0",
+    "request": "2.69.0",
+    "underscore": "1.8.3"
+  }
+}
