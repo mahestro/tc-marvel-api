@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: __dirname + '/.env'});
 var fs = require('fs'),
     http = require('http'),
     path = require('path'),
