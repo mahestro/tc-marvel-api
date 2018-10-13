@@ -6,7 +6,8 @@ var fs = require('fs'),
     session = require('express-session'),
     cors = require('cors'),
     errorhandler = require('errorhandler'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    ProjectDevice = require('./models/ProjectDevice');
     require('dotenv').config();
 
 var isProduction = process.env.NODE_ENV === 'production';
@@ -32,7 +33,7 @@ if (!isProduction) {
 }
 
 if(isProduction){
-  // mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGODB_URI);
 } else {
   mongoose.connect('mongodb://localhost/tc-marvel');
   mongoose.set('debug', true);
