@@ -14,14 +14,18 @@ router.param('team', function(req, res, next, idTeamMarvelApp) {
       req.team = team;
 
       return next();
-    }).catch(next);
+    }).catch(function(err) {
+      next(err);
+    });
 });
 
 router
-  .post('/', function(req, res) {
+  .post('/', function(req, res, next) {
     var team = new Team(req.body.team);
     return team.save().then(function() {
       return res.json({ team: team.toJSONFor() });
+    }).catch(function(err) {
+      next(err);
     });
   })
   .get('/:team', function(req, res, next) {

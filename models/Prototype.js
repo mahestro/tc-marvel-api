@@ -1,14 +1,20 @@
 var mongoose = require('mongoose'),
-    ProjectDevice = mongoose.model('ProjectDevice');
+    ProjectDevice = mongoose.model('ProjectDevice'),
+    uniqueValidator = require('mongoose-unique-validator');
 
 var PrototypeSchema = new mongoose.Schema({
   title: String,
-  idPrototypeMarvelApp: String,
+  idPrototypeMarvelApp: {
+    type: String,
+    unique: true
+  },
   projectType: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProjectDevice'
   }
 }, { timestamps: true });
+
+PrototypeSchema.plugin(uniqueValidator, { message: 'is already taken.' });
 
 PrototypeSchema.methods.toJSONFor = function() {
   return {

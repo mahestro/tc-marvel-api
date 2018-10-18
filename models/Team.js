@@ -1,16 +1,29 @@
 var mongoose = require('mongoose'),
-    ProjectDevice = mongoose.model('ProjectDevice');
+    ProjectDevice = mongoose.model('ProjectDevice'),
+    uniqueValidator = require('mongoose-unique-validator');
 
 var TeamSchema = new mongoose.Schema({
-  idTeamMarvelApp: String,
-  idTopcoderChallenge: String,
+  idTeamMarvelApp: {
+    type: String,
+    unique: true
+  },
+  idTopcoderChallenge: {
+    type: String,
+    unique: true
+  },
   teamName: String,
   baseName: String,
+  baseCount: {
+    type: Number,
+    default: 0
+  },
   projectTypes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProjectDevice'
   }]
 });
+
+TeamSchema.plugin(uniqueValidator, { message: 'is already taken.' });
 
 TeamSchema.methods.toJSONFor = function() {
   return {
@@ -19,6 +32,7 @@ TeamSchema.methods.toJSONFor = function() {
     idTopcoderChallenge: this.idTopcoderChallenge,
     teamName: this.teamName,
     baseName: this.baseName,
+    baseCount: this.baseCount + 1,
     projectTypes: this.projectTypes,
   };
 };
