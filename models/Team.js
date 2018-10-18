@@ -14,7 +14,7 @@ var TeamSchema = new mongoose.Schema({
 
 TeamSchema.methods.toJSONFor = function() {
   return {
-    id: this._id,
+    id: this._id.toString(),
     idTeamMarvelApp: this.idTeamMarvelApp,
     idTopcoderChallenge: this.idTopcoderChallenge,
     teamName: this.teamName,

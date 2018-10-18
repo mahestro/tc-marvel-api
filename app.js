@@ -8,7 +8,9 @@ var fs = require('fs'),
     errorhandler = require('errorhandler'),
     mongoose = require('mongoose'),
     ProjectDevice = require('./models/ProjectDevice'),
-    Team = require('./models/Team');
+    Team = require('./models/Team'),
+    Prototype = require('./models/Prototype'),
+    Request = require('./models/Request');
     require('dotenv').config();
 
 var isProduction = process.env.NODE_ENV === 'production';

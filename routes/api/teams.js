@@ -2,6 +2,7 @@
 var router = require('express').Router(),
     mongoose = require('mongoose'),
     Team = mongoose.model('Team'),
+    Request = mongoose.model('Request'),
     ProjectDevice = mongoose.model('ProjectDevice');
 
 
@@ -24,14 +25,13 @@ router
     });
   })
   .get('/:team', function(req, res, next) {
-    Team.findById(req.params.team).then(function(result) {
-      if (!result) {
-        return res.sendStatus(404);
-      }
-
-      return res.json({team: result.toJSONFor()});
+    Promise.all([
+      req.team
+    ]).then(function(result) {
+      team = result[0];
+      return res.json({team: team.toJSONFor()})
     }).catch(function(err) {
-      return next(err);
+      next(err);
     });
   })
   .put('/:team', function(req, res, next) {
@@ -65,6 +65,8 @@ router
     var team = req.team;
     return team.remove().then(function() {
       return res.sendStatus(204);
+    }).catch(function(err) {
+      next(err);
     });
   })
   .get('/', function(req, res, next) {
@@ -80,6 +82,23 @@ router
           return team.toJSONFor();
         })
       });
+    });
+  })
+  .get('/:team/requests', function(req, res, next) {
+    Promise.all([
+      Request.find({idTeamMarvelApp: req.team.idTeamMarvelApp})
+        .sort({createdAt: 'desc'})
+        .populate('projects')
+        .exec()
+    ]).then(function(results) {
+      var requests = results[0];
+      return res.json({
+        requests: requests.map(function(request){
+          return request.toJSONFor();
+        })
+      });
+    }).catch(function(err) {
+      next(err);
     });
   });
 
