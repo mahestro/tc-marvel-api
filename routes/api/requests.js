@@ -6,7 +6,6 @@ var router = require('express').Router(),
   Prototype = mongoose.model('Prototype'),
   async = require('async');
 
-
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
     .populate('projectTypes')
@@ -68,9 +67,6 @@ router
         });
       },
       function saveRequest(projects, cb) {
-        console.log('projectsIDs');
-        console.log(projects);
-
         var request = new Request({
           ...req.body.request,
           projects: projects
