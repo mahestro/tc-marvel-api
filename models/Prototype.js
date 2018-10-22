@@ -11,7 +11,8 @@ var PrototypeSchema = new mongoose.Schema({
   projectType: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProjectDevice'
-  }
+  },
+  prototypeUrl: String
 }, { timestamps: true });
 
 PrototypeSchema.plugin(uniqueValidator, { message: 'is already taken.' });
@@ -23,7 +24,8 @@ PrototypeSchema.methods.toJSONFor = function() {
     idPrototypeMarvelApp: this.idPrototypeMarvelApp,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    projectType: this.projectType
+    projectType: this.projectType,
+    prototypeUrl: this.prototypeUrl
   };
 };
 

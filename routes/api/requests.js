@@ -4,49 +4,27 @@ var router = require('express').Router(),
   Team = mongoose.model('Team'),
   Request = mongoose.model('Request'),
   Prototype = mongoose.model('Prototype'),
-  async = require('async');
+  async = require('async'),
+  // apolloLink = require('apollo-link'),
+  // linkHttp = require('apollo-link-http'),
+  gql = require('graphql-tag'),
+  // fetch = require('node-fetch')
+  config = require('../../utils/config'),
+  graphConnector = require('../../utils/graphql-connect');
 
-  var apolloLink = require('apollo-link');
-  var linkHttp = require('apollo-link-http');
-  var gql = require('graphql-tag');
-  var fetch = require('node-fetch');
+// var execute = apolloLink.execute;
+// var makePromise = apolloLink.makePromise;
+// var HttpLink = linkHttp.HttpLink;
 
-  var execute = apolloLink.execute;
-  var makePromise = apolloLink.makePromise;
-  var HttpLink = linkHttp.HttpLink;
+// var link = new HttpLink({
+//   uri: config.MARVELAPP_GQL_URL,
+//   fetch: fetch,
+//   headers: {
+//     authorization: `Bearer ${process.env.MARVELAPP_TOKEN}`
+//   }
+// });
 
-  const uri = 'https://api.marvelapp.com/graphql';
-  const token = 'IvsXbXpa4XrkUyHYtb4jS5RRZVFqrF';
-  const link = new HttpLink({
-    uri,
-    fetch: fetch,
-    headers: {
-      authorization: `Bearer ${token}`
-    }
-  });
 
-  const operation = {
-    query: gql`query projects {
-                project(pk: 3350906) {
-                  companyPk
-                  settings {
-                    deviceFrame
-                  }
-                }
-              }`
-  };
-
-  // execute returns an Observable so it can be subscribed to
-  execute(link, operation).subscribe({
-    next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
-    error: error => console.log(`received error ${error}`),
-    complete: () => console.log(`complete`),
-  })
-
-  // For single execution operations, a Promise can be used
-  makePromise(execute(link, operation))
-    .then(data => console.log(`received data ${JSON.stringify(data, null, 2)}`))
-    .catch(error => console.log(`received error ${error}`))
 
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
@@ -80,31 +58,66 @@ router
   .post('/:challenge', function(req, res, next) {
     var tasks = [
       function createPrototypes(cb) {
+        var operationNewProject = {
+          query: gql`mutation newProject($companyId: Int, $teamId: Int, $projectName: String!, $device: FrameEnum) {
+            createProject(input: {
+              companyPk: $companyId,
+              teamPk: $teamId,
+              name: $projectName,
+              settings: {
+                deviceFrame: $device
+              }
+            }) {
+              ok
+              project {
+                pk
+                name
+                prototypeUrl
+              }
+            }
+          }`
+        };
+
         var projectsInProcess = req.team.projectTypes.length;
         var projects = [];
-        var protoId = Math.floor(Math.random(1) * 50000);
 
         async.each(req.team.projectTypes, function(projectType) {
-          var prototype = new Prototype({
-            title: `${req.team.baseName} - ${req.team.baseCount} - ${projectType.projectName}`,
-            idPrototypeMarvelApp: protoId,
-            projectType: projectType._id
-          });
+          operationNewProject.variables = {
+            companyPk: config.MARVELAPP_TC_COMPANYID,
+            teamId: req.team.idTeamMarvelApp,
+            projectName: `${req.team.baseName} - ${req.team.baseCount} - ${projectType.projectName}`,
+            device: projectType.marvelAppId,
+          };
 
-          protoId += 1;
+          graphConnector.makePromise(graphConnector.execute(graphConnector.link, operationNewProject))
+            .then(function(data) {
+              if (data.data.createProject.ok) {
+                var projectData = data.data.createProject.project;
+                var prototype = new Prototype({
+                  title: projectData.name,
+                  idPrototypeMarvelApp: projectData.pk,
+                  prototypeUrl: projectData.prototypeUrl,
+                  projectType: projectType._id
+                });
 
-          prototype
-            .save()
-            .then(function() {
-              projects.push(prototype._id);
-              projectsInProcess--;
+                prototype
+                  .save()
+                  .then(function() {
+                    projects.push(prototype._id);
+                    projectsInProcess--;
 
-              if (projectsInProcess === 0) {
-                cb(null, projects);
+                    if (projectsInProcess === 0) {
+                      cb(null, projects);
+                    }
+                  })
+                  .catch(function(err) {
+                    cb(err);
+                  });
               }
             })
-            .catch(function(err) {
-              cb(err);
+            .catch(function(error) {
+              console.log(`received error ${error}`);
+              cb(error);
             });
         });
       },
@@ -128,19 +141,6 @@ router
         }
         return res.json(results);
     });
-
-
-
-    // var request = new Request({
-    //   ...req.body.request,
-    //   projects: projects
-    // });
-
-    // return request.save().then(function() {
-    //   return res.json({ request: request.toJSONFor() });
-    // }).catch(function(err) {
-    //   next(err);
-    // });
   })
   .put('/:request', function(req, res, next) {
     var request = req.request;
