@@ -6,6 +6,48 @@ var router = require('express').Router(),
   Prototype = mongoose.model('Prototype'),
   async = require('async');
 
+  var apolloLink = require('apollo-link');
+  var linkHttp = require('apollo-link-http');
+  var gql = require('graphql-tag');
+  var fetch = require('node-fetch');
+
+  var execute = apolloLink.execute;
+  var makePromise = apolloLink.makePromise;
+  var HttpLink = linkHttp.HttpLink;
+
+  const uri = 'https://api.marvelapp.com/graphql';
+  const token = 'IvsXbXpa4XrkUyHYtb4jS5RRZVFqrF';
+  const link = new HttpLink({
+    uri,
+    fetch: fetch,
+    headers: {
+      authorization: `Bearer ${token}`
+    }
+  });
+
+  const operation = {
+    query: gql`query projects {
+                project(pk: 3350906) {
+                  companyPk
+                  settings {
+                    deviceFrame
+                  }
+                }
+              }`
+  };
+
+  // execute returns an Observable so it can be subscribed to
+  execute(link, operation).subscribe({
+    next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
+    error: error => console.log(`received error ${error}`),
+    complete: () => console.log(`complete`),
+  })
+
+  // For single execution operations, a Promise can be used
+  makePromise(execute(link, operation))
+    .then(data => console.log(`received data ${JSON.stringify(data, null, 2)}`))
+    .catch(error => console.log(`received error ${error}`))
+
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
     .populate('projectTypes')
