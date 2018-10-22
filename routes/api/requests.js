@@ -5,26 +5,9 @@ var router = require('express').Router(),
   Request = mongoose.model('Request'),
   Prototype = mongoose.model('Prototype'),
   async = require('async'),
-  // apolloLink = require('apollo-link'),
-  // linkHttp = require('apollo-link-http'),
   gql = require('graphql-tag'),
-  // fetch = require('node-fetch')
   config = require('../../utils/config'),
   graphConnector = require('../../utils/graphql-connect');
-
-// var execute = apolloLink.execute;
-// var makePromise = apolloLink.makePromise;
-// var HttpLink = linkHttp.HttpLink;
-
-// var link = new HttpLink({
-//   uri: config.MARVELAPP_GQL_URL,
-//   fetch: fetch,
-//   headers: {
-//     authorization: `Bearer ${process.env.MARVELAPP_TOKEN}`
-//   }
-// });
-
-
 
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
@@ -58,7 +41,7 @@ router
   .post('/:challenge', function(req, res, next) {
     var tasks = [
       function createPrototypes(cb) {
-        var operationNewProject = {
+        var mutationNewProject = {
           query: gql`mutation newProject($companyId: Int, $teamId: Int, $projectName: String!, $device: FrameEnum) {
             createProject(input: {
               companyPk: $companyId,
@@ -82,14 +65,14 @@ router
         var projects = [];
 
         async.each(req.team.projectTypes, function(projectType) {
-          operationNewProject.variables = {
+          mutationNewProject.variables = {
             companyPk: config.MARVELAPP_TC_COMPANYID,
             teamId: req.team.idTeamMarvelApp,
             projectName: `${req.team.baseName} - ${req.team.baseCount} - ${projectType.projectName}`,
             device: projectType.marvelAppId,
           };
 
-          graphConnector.makePromise(graphConnector.execute(graphConnector.link, operationNewProject))
+          graphConnector.makePromise(graphConnector.execute(graphConnector.link, mutationNewProject))
             .then(function(data) {
               if (data.data.createProject.ok) {
                 var projectData = data.data.createProject.project;
@@ -97,7 +80,8 @@ router
                   title: projectData.name,
                   idPrototypeMarvelApp: projectData.pk,
                   prototypeUrl: projectData.prototypeUrl,
-                  projectType: projectType._id
+                  projectType: projectType._id,
+                  baseCount: req.team.baseCount
                 });
 
                 prototype
@@ -122,6 +106,12 @@ router
         });
       },
       function saveRequest(projects, cb) {
+        req.team.baseCount += 1;
+        req.team.save()
+          .catch(function(err) {
+            return cb(err);
+          });
+
         var request = new Request({
           ...req.body.request,
           projects: projects

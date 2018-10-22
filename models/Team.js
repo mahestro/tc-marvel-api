@@ -15,7 +15,7 @@ var TeamSchema = new mongoose.Schema({
   baseName: String,
   baseCount: {
     type: Number,
-    default: 0
+    default: 1
   },
   projectTypes: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +32,7 @@ TeamSchema.methods.toJSONFor = function() {
     idTopcoderChallenge: this.idTopcoderChallenge,
     teamName: this.teamName,
     baseName: this.baseName,
-    baseCount: this.baseCount + 1,
+    baseCount: this.baseCount,
     projectTypes: this.projectTypes,
   };
 };

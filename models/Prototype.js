@@ -12,7 +12,11 @@ var PrototypeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProjectDevice'
   },
-  prototypeUrl: String
+  prototypeUrl: String,
+  baseCount: {
+    type: Number,
+    default: 0
+  }
 }, { timestamps: true });
 
 PrototypeSchema.plugin(uniqueValidator, { message: 'is already taken.' });
@@ -25,7 +29,8 @@ PrototypeSchema.methods.toJSONFor = function() {
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     projectType: this.projectType,
-    prototypeUrl: this.prototypeUrl
+    prototypeUrl: this.prototypeUrl,
+    baseCount: this.baseCount
   };
 };
 

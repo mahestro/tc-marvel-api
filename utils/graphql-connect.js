@@ -1,7 +1,7 @@
 var apolloLink = require('apollo-link'),
-    linkHttp = require('apollo-link-http'),
-    fetch = require('node-fetch'),
-    config = require('./config');
+  linkHttp = require('apollo-link-http'),
+  fetch = require('node-fetch'),
+  config = require('./config');
 
 var HttpLink = linkHttp.HttpLink;
 
