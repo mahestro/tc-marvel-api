@@ -32,7 +32,7 @@ TeamSchema.methods.toJSONFor = function() {
     idTopcoderChallenge: this.idTopcoderChallenge,
     teamName: this.teamName,
     baseName: this.baseName,
-    baseCount: this.baseCount,
+    baseCount: this.baseCount - 1,
     projectTypes: this.projectTypes,
   };
 };

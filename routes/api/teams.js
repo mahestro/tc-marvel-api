@@ -22,21 +22,18 @@ router.param('team', function(req, res, next, idTeamMarvelApp) {
 router
   .post('/', function(req, res, next) {
     var team = new Team(req.body.team);
-    return team.save().then(function() {
-      return res.json({ team: team.toJSONFor() });
-    }).catch(function(err) {
-      next(err);
-    });
-  })
-  .get('/:team', function(req, res, next) {
-    Promise.all([
-      req.team
-    ]).then(function(result) {
-      team = result[0];
-      return res.json({team: team.toJSONFor()})
-    }).catch(function(err) {
-      next(err);
-    });
+    return team.save()
+      .then(function() {
+        Team.findOne({idTeamMarvelApp: req.body.team.idTeamMarvelApp})
+          .populate('projectTypes')
+          .exec()
+          .then(function(result) {
+            return res.json({ team: result.toJSONFor() });
+          });
+      })
+      .catch(function(err) {
+        next(err);
+      });
   })
   .put('/:team', function(req, res, next) {
     var team = req.team;
@@ -61,8 +58,27 @@ router
       team.projectTypes = req.body.team.projectTypes;
     }
 
-    return team.save().then(function() {
-      return res.json({ team: team.toJSONFor() });
+    return team.save()
+      .then(function() {
+        Team.findOne({idTeamMarvelApp: req.body.team.idTeamMarvelApp})
+          .populate('projectTypes')
+          .exec()
+          .then(function(result) {
+            return res.json({ team: result.toJSONFor() });
+          });
+      })
+      .catch(function(err) {
+        next(err);
+      });
+  })
+  .get('/:team', function(req, res, next) {
+    Promise.all([
+      req.team
+    ]).then(function(result) {
+      team = result[0];
+      return res.json({team: team.toJSONFor()})
+    }).catch(function(err) {
+      next(err);
     });
   })
   .delete('/:team', function(req, res, next) {
