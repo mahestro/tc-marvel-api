@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
-    ProjectDevice = mongoose.model('ProjectDevice'),
-    uniqueValidator = require('mongoose-unique-validator');
+  ProjectDevice = mongoose.model('ProjectDevice'),
+  Request = mongoose.model('Request'),
+  uniqueValidator = require('mongoose-unique-validator');
 
 var TeamSchema = new mongoose.Schema({
   idTeamMarvelApp: {
@@ -33,7 +34,7 @@ TeamSchema.methods.toJSONFor = function() {
     teamName: this.teamName,
     baseName: this.baseName,
     baseCount: this.baseCount - 1,
-    projectTypes: this.projectTypes,
+    projectTypes: this.projectTypes
   };
 };
 

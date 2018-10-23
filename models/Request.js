@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var RequestSchema = new mongoose.Schema({
   tcEmail: String,
   tcHandle: String,
-  idTeamMarvelApp: String,
+  idTopcoderChallenge: String,
   projects: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Prototype'
@@ -16,10 +16,10 @@ RequestSchema.methods.toJSONFor = function() {
     id: this._id,
     tcEmail: this.tcEmail,
     tcHandle: this.tcHandle,
-    idTeamMarvelApp: this.idTeamMarvelApp,
+    idTopcoderChallenge: this.idTopcoderChallenge,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    projects: this.projects,
+    projects: this.projects
   };
 };
 

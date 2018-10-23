@@ -3,6 +3,7 @@ var router = require('express').Router(),
     mongoose = require('mongoose'),
     Team = mongoose.model('Team'),
     Request = mongoose.model('Request'),
+    Prototype = mongoose.model('Prototype'),
     ProjectDevice = mongoose.model('ProjectDevice');
 
 
@@ -106,9 +107,17 @@ router
   })
   .get('/:team/requests', function(req, res, next) {
     Promise.all([
-      Request.find({idTeamMarvelApp: req.team.idTeamMarvelApp})
+      Request.find({idTopcoderChallenge: req.team.idTopcoderChallenge})
         .sort({createdAt: 'desc'})
-        .populate('projects')
+        .populate([{
+          path: 'projects',
+          model: 'Prototype',
+          populate: {
+            path: 'projectType',
+            model: 'ProjectDevice'
+          }
+        }
+      ])
         .exec()
     ]).then(function(results) {
       var requests = results[0];

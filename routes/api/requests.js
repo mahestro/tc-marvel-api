@@ -151,8 +151,12 @@ router
       request.projects = req.body.request.projects;
     }
 
-    return request.save().then(function() {
-      return res.json({ request: request.toJSONFor() });
+    return request.save().then(function(doc) {
+      Request.findById(doc._id)
+        .populate('projects')
+        .then(function(result) {
+          return res.json({ request: result.toJSONFor() });
+        })
     });
   })
   .delete('/:request', function(req, res, next) {
