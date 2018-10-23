@@ -23,8 +23,8 @@ router
   .post('/', function(req, res, next) {
     var team = new Team(req.body.team);
     return team.save()
-      .then(function() {
-        Team.findOne({idTeamMarvelApp: req.body.team.idTeamMarvelApp})
+      .then(function(doc) {
+        Team.findById(doc._id)
           .populate('projectTypes')
           .exec()
           .then(function(result) {
@@ -59,8 +59,8 @@ router
     }
 
     return team.save()
-      .then(function() {
-        Team.findOne({idTeamMarvelApp: req.body.team.idTeamMarvelApp})
+      .then(function(doc) {
+        Team.findById(doc._id)
           .populate('projectTypes')
           .exec()
           .then(function(result) {

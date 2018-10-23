@@ -117,8 +117,12 @@ router
           projects: projects
         });
 
-        request.save().then(function() {
-          return cb(null, { request: request.toJSONFor() });
+        request.save().then(function(doc) {
+            Request.findById(doc._id)
+              .populate('projects')
+              .then(function(result) {
+                return cb(null, { request: result.toJSONFor() });
+              })
         }).catch(function(err) {
           return cb(err);
         });
