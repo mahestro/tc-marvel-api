@@ -2,7 +2,5 @@ Backend for tc-marvelapp connector. Managing marvelapp requests from Topcoder me
 
 
 
-## Version 1.0
-Simple email request using `sendgrid`.
-
-Must define environment variables for sengrid keys.
+## Version 2.0.1
+Must define environment variables for sengrid and Marvelapp API keys.
