@@ -1,45 +1,41 @@
-var dotenv = require('dotenv');
+require('dotenv').config();
 var fs = require('fs'),
     http = require('http'),
     path = require('path'),
     express = require('express'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    MongoDBStore = require('connect-mongodb-session')(session),
+    mongoose = require('mongoose'),
+    MongoStore = require('connect-mongo')(session),
     cors = require('cors'),
     errorhandler = require('errorhandler'),
-    mongoose = require('mongoose'),
     ProjectDevice = require('./models/ProjectDevice'),
     Prototype = require('./models/Prototype'),
     Request = require('./models/Request'),
     Team = require('./models/Team');
 
-dotenv.config();
 var isProduction = process.env.NODE_ENV === 'production';
 var port = process.env.PORT || 3001;
-var dbConnection = isProduction ? process.env.MONGODB_URI : 'mongodb://localhost/tc-marvel';
 
 // Create global app object
 var app = express();
 
-mongoose.connect(dbConnection);
+mongoose.connect(isProduction ? process.env.MONGODB_URI : 'mongodb://localhost/tc-marvel', {
+  useMongoClient: true
+});
 mongoose.set('debug', true);
+// mongoose.Promise = global.Promise
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
-var store = new MongoDBStore({
-  uri: dbConnection,
-  collection: 'sessions'
-});
-
 app.use(session({
-  secret: 'This is a secret',
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7
-  },
-  store: store,
-  resave: true,
-  saveUninitialized: true
+  secret: 'tc-marvel-secret',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({
+    mongooseConnection: db,
+    ttl: 1000 * 60 * 60 * 24 * 7
+  })
 }));
 
 app.use(cors());
