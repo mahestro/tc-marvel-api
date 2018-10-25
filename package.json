@@ -19,6 +19,7 @@
     "apollo-link-http": "^1.5.5",
     "async": "^2.6.1",
     "body-parser": "1.15.0",
+    "chromedriver": "^2.43.0",
     "cors": "2.7.1",
     "dotenv": "^6.0.0",
     "ejs": "2.4.1",
@@ -33,6 +34,7 @@
     "morgan": "1.7.0",
     "node-fetch": "^2.2.0",
     "request": "2.69.0",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "underscore": "1.8.3"
   }
 }
