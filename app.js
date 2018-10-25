@@ -1,4 +1,4 @@
-require('dotenv').config();
+var dotenv = require('dotenv');
 var fs = require('fs'),
     http = require('http'),
     path = require('path'),
@@ -14,6 +14,7 @@ var fs = require('fs'),
     Request = require('./models/Request'),
     Team = require('./models/Team');
 
+dotenv.config();
 var isProduction = process.env.NODE_ENV === 'production';
 var port = process.env.PORT || 3001;
 var dbConnection = isProduction ? process.env.MONGODB_URI : 'mongodb://localhost/tc-marvel';
