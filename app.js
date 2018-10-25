@@ -1,3 +1,4 @@
+require('dotenv').config();
 var fs = require('fs'),
     http = require('http'),
     path = require('path'),
@@ -12,7 +13,6 @@ var fs = require('fs'),
     Prototype = require('./models/Prototype'),
     Request = require('./models/Request'),
     Team = require('./models/Team');
-    require('dotenv').config();
 
 var isProduction = process.env.NODE_ENV === 'production';
 var port = process.env.PORT || 3001;
