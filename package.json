@@ -20,6 +20,7 @@
     "async": "^2.6.1",
     "body-parser": "1.15.0",
     "chromedriver": "^2.43.0",
+    "connect-mongodb-session": "^2.0.3",
     "cors": "2.7.1",
     "dotenv": "^6.0.0",
     "ejs": "2.4.1",
