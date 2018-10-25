@@ -30,11 +30,14 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 app.use(session({
   secret: 'tc-marvel-secret',
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  },
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({
     mongooseConnection: db,
-    ttl: 1000 * 60 * 60 * 24 * 7
+    autoRemove: 'native'
   })
 }));
 
