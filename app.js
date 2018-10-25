@@ -150,7 +150,7 @@ chromeCapabilities.set('chromeOptions', chromeOptions);
     await driver.getTitle().then(function(title) {
       console.log('Old page title is: ' + title);
     })
-    await driver.wait(until.elementLocated(By.id('lst-ib')), 20000);
+    // await driver.wait(until.elementLocated(By.id('lst-ib')), 20000);
     const element = await driver.findElement(By.name('q'));
     await element.sendKeys('Cheese!');
     await element.submit();
