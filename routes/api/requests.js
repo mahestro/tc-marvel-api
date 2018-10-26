@@ -7,7 +7,11 @@ var router = require('express').Router(),
   async = require('async'),
   gql = require('graphql-tag'),
   config = require('../../utils/config'),
-  graphConnector = require('../../utils/graphql-connect');
+  graphConnector = require('../../utils/graphql-connect'),
+  child = require('child_process'),
+  schedule = require('node-schedule');
+
+
 
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
@@ -68,7 +72,7 @@ router
           mutationNewProject.variables = {
             companyPk: config.MARVELAPP_TC_COMPANYID,
             teamId: req.team.idTeamMarvelApp,
-            projectName: `${req.team.baseName} - ${req.team.baseCount} - ${projectType.projectName}`,
+            projectName: `${req.team.baseName} ${String('000' + req.team.baseCount).slice(-3)} - ${projectType.projectName}`,
             device: projectType.marvelAppId,
           };
 
@@ -166,6 +170,20 @@ router
     }).catch(function(err) {
       next(err);
     });
+  })
+  // TODO: DELETE - test code
+  .get('/', function(req, res, next) {
+    var message = {
+      operation: 'createPrototype',
+      parameters: {
+        message: 'hey locos'
+      }
+    }
+
+    res.status(200).send("Hello world, this should be sent inmediately");
+    var childTask = child.fork('./tasks');
+    childTask.send(message);
+    // schedule.scheduleJob(Date.now() + 0.1*60000, childTask.send(message));
   });
 
 module.exports = router;
