@@ -13,7 +13,7 @@ const chromeOptions = {
 chromeCapabilities.set('chromeOptions', chromeOptions);
 
 let driver;
-const defaultWaitTime = 20000;
+const defaultWaitTime = 10000;
 
 async function createPrototype(parameters) {
   const { prototypes, email } = parameters;
