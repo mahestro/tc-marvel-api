@@ -16,7 +16,11 @@ var PrototypeSchema = new mongoose.Schema({
   baseCount: {
     type: Number,
     default: 0
-  }
+  },
+  collaboratorSuccessful: {
+    type: Boolean,
+    default: false
+  },
 }, { timestamps: true });
 
 PrototypeSchema.plugin(uniqueValidator, { message: 'is already taken.' });
@@ -30,7 +34,8 @@ PrototypeSchema.methods.toJSONFor = function() {
     updatedAt: this.updatedAt,
     projectType: this.projectType,
     prototypeUrl: this.prototypeUrl,
-    baseCount: this.baseCount
+    baseCount: this.baseCount,
+    collaboratorSuccessful: this.collaboratorSuccessful
   };
 };
 

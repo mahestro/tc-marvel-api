@@ -11,8 +11,6 @@ var router = require('express').Router(),
   child = require('child_process'),
   schedule = require('node-schedule');
 
-
-
 router.param('challenge', function(req, res, next, idTopcoderChallenge) {
   Team.findOne({ idTopcoderChallenge: idTopcoderChallenge })
     .populate('projectTypes')
@@ -137,6 +135,33 @@ router
         if (err) {
             return next(err);
         }
+
+        var message = {
+          operation: 'createPrototype',
+          parameters: {
+            email: results.request.tcEmail,
+            prototypes: results.request.projects
+          }
+        }
+
+        // var childTask = child.fork('./tasks');
+        // childTask.on('message', message => {
+        //   console.log('message');
+        //   console.log(message);
+
+        //   Prototype.findOne({idPrototypeMarvelApp: message.idPrototypeMarvelApp})
+        //     .then(function(proto) {
+        //       proto.collaboratorSuccessful = true;
+        //       proto.save()
+        //         .catch(err => {
+        //           next(err);
+        //         })
+        //     }).catch(err => {
+        //       next(err);
+        //     });
+        // });
+        // childTask.send(message);
+
         return res.json(results);
     });
   })
@@ -176,14 +201,37 @@ router
     var message = {
       operation: 'createPrototype',
       parameters: {
-        message: 'hey locos'
+        email: 'mahestro.topcoder@gmail.com',
+        prototypes: [
+          {idPrototypeMarvelApp: 3483110},
+          {idPrototypeMarvelApp: 3483109}
+        ]
       }
     }
 
     res.status(200).send("Hello world, this should be sent inmediately");
     var childTask = child.fork('./tasks');
+    childTask.on('message', message => {
+      async.each(message, async(prototype) => {
+        Prototype.findOne({idPrototypeMarvelApp: prototype.idPrototypeMarvelApp})
+          .then(function(proto) {
+            proto.collaboratorSuccessful = true;
+            proto.save()
+              .catch(err => {
+                next(err);
+              })
+          }).catch(err => {
+            next(err);
+          });
+        });
+      });
+
+
     childTask.send(message);
-    // schedule.scheduleJob(Date.now() + 0.1*60000, childTask.send(message));
+
+    // async.each(message.parameters.prototypes, async (prototype) => {
+    //   await childTask.send({operation:'createPrototype', parameters: {email: 'mahestro.topcoder@gmail.com', idPrototypeMarvelApp: prototype.idPrototypeMarvelApp}});
+    // });
   });
 
 module.exports = router;

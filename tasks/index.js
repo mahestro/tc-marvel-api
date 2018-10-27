@@ -4,10 +4,9 @@ var schedule = require('node-schedule'),
 process.on('message', function(message) {
   switch (message.operation) {
     case 'createPrototype':
-      schedule.scheduleJob(Date.now() + 0.3*60000, function() {
+      schedule.scheduleJob(Date.now() + 0.1*60000, async() => {
         marvelTask.createPrototype(message.parameters);
       });
-      // marvelTask.createPrototype(message.parameters);
       break;
 
     default:
