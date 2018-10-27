@@ -144,24 +144,24 @@ router
           }
         }
 
-        // var childTask = child.fork('./tasks');
-        // childTask.on('message', message => {
-        //   console.log('message');
-        //   console.log(message);
+        var childTask = child.fork('./tasks');
 
-        //   Prototype.findOne({idPrototypeMarvelApp: message.idPrototypeMarvelApp})
-        //     .then(function(proto) {
-        //       proto.collaboratorSuccessful = true;
-        //       proto.save()
-        //         .catch(err => {
-        //           next(err);
-        //         })
-        //     }).catch(err => {
-        //       next(err);
-        //     });
-        // });
-        // childTask.send(message);
+        childTask.on('message', prototypes => {
+          async.each(prototypes, async(prototypeItem) => {
+            Prototype.findOne({idPrototypeMarvelApp: prototypeItem.idPrototypeMarvelApp})
+              .then(function(proto) {
+                proto.collaboratorSuccessful = true;
+                proto.save()
+                  .catch(err => {
+                    next(err);
+                  })
+              }).catch(err => {
+                next(err);
+              });
+            });
+          });
 
+        childTask.send(message);
         return res.json(results);
     });
   })
@@ -195,43 +195,6 @@ router
     }).catch(function(err) {
       next(err);
     });
-  })
-  // TODO: DELETE - test code
-  .get('/', function(req, res, next) {
-    var message = {
-      operation: 'createPrototype',
-      parameters: {
-        email: 'mahestro.topcoder@gmail.com',
-        prototypes: [
-          {idPrototypeMarvelApp: 3483110},
-          {idPrototypeMarvelApp: 3483109}
-        ]
-      }
-    }
-
-    res.status(200).send("Hello world, this should be sent inmediately");
-    var childTask = child.fork('./tasks');
-    childTask.on('message', message => {
-      async.each(message, async(prototype) => {
-        Prototype.findOne({idPrototypeMarvelApp: prototype.idPrototypeMarvelApp})
-          .then(function(proto) {
-            proto.collaboratorSuccessful = true;
-            proto.save()
-              .catch(err => {
-                next(err);
-              })
-          }).catch(err => {
-            next(err);
-          });
-        });
-      });
-
-
-    childTask.send(message);
-
-    // async.each(message.parameters.prototypes, async (prototype) => {
-    //   await childTask.send({operation:'createPrototype', parameters: {email: 'mahestro.topcoder@gmail.com', idPrototypeMarvelApp: prototype.idPrototypeMarvelApp}});
-    // });
   });
 
 module.exports = router;
