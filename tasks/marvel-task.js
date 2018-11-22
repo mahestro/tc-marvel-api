@@ -13,7 +13,7 @@ const chromeOptions = {
 chromeCapabilities.set('chromeOptions', chromeOptions);
 
 let driver;
-const defaultWaitTime = 14000;
+const defaultWaitTime = 25000;
 
 async function createPrototype(parameters) {
   const { prototypes, email } = parameters;
@@ -34,9 +34,17 @@ async function createPrototype(parameters) {
       })();
     } while(i < prototypes.length)
 
-    await process.send(prototypes);
+    await process.send({
+      error: false,
+      log: '',
+      payload: prototypes
+    });
   } catch(err) {
-    throw(err);
+    await process.send({
+      error: true,
+      log: err.message,
+      payload: prototypes[0]
+    });
   } finally {
     await driver.quit();
   }

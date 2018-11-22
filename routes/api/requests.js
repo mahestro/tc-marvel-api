@@ -83,7 +83,8 @@ router
                   idPrototypeMarvelApp: projectData.pk,
                   prototypeUrl: projectData.prototypeUrl,
                   projectType: projectType._id,
-                  baseCount: req.team.baseCount
+                  baseCount: req.team.baseCount,
+                  log: ''
                 });
 
                 prototype
@@ -146,19 +147,34 @@ router
 
         var childTask = child.fork('./tasks');
 
-        childTask.on('message', prototypes => {
-          async.each(prototypes, async(prototypeItem) => {
-            Prototype.findOne({idPrototypeMarvelApp: prototypeItem.idPrototypeMarvelApp})
-              .then(function(proto) {
-                proto.collaboratorSuccessful = true;
-                proto.save()
-                  .catch(err => {
-                    next(err);
-                  })
-              }).catch(err => {
-                next(err);
+        childTask.on('message', message => {
+          if (!message.error) {
+            prototypes = message.payload;
+            async.each(prototypes, async(prototypeItem) => {
+              Prototype.findOne({idPrototypeMarvelApp: prototypeItem.idPrototypeMarvelApp})
+                .then(function(proto) {
+                  proto.collaboratorSuccessful = true;
+                  proto.save()
+                    .catch(err => {
+                      next(err);
+                    })
+                }).catch(err => {
+                  next(err);
+                });
               });
-            });
+            } else {
+              Prototype.findOne({idPrototypeMarvelApp: message.payload.idPrototypeMarvelApp})
+                .then(function(proto) {
+                  proto.log = message.log;
+                  proto.save()
+                    .catch(err => {
+                      next(err);
+                    });
+                })
+                .catch(err => {
+                  next(err);
+                });
+            }
           });
 
         childTask.send(message);
