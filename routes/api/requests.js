@@ -28,6 +28,8 @@ router.param('challenge', function(req, res, next, idTopcoderChallenge) {
 
 router.param('request', function(req, res, next, idRequest) {
   Request.findOne({ _id: idRequest })
+    .populate('projects')
+    .exec()
     .then(function(request) {
       if (!request) { return res.sendStatus(404); }
 
@@ -134,7 +136,7 @@ router
 
     async.waterfall(tasks, (err, results) => {
         if (err) {
-            return next(err);
+          return next(err);
         }
 
         var message = {
@@ -180,6 +182,53 @@ router
         childTask.send(message);
         return res.json(results);
     });
+  })
+  .get('/:request/retry', function(req, res, next) {
+    var request = req.request;
+
+    var message = {
+      operation: 'createPrototype',
+      parameters: {
+        email: request.tcEmail,
+        prototypes: request.projects
+      }
+    }
+
+    var childTask = child.fork('./tasks');
+
+    childTask.on('message', message => {
+      if (!message.error) {
+        prototypes = message.payload;
+        async.each(prototypes, async(prototypeItem) => {
+          Prototype.findOne({idPrototypeMarvelApp: prototypeItem.idPrototypeMarvelApp})
+            .then(function(proto) {
+              proto.collaboratorSuccessful = true;
+              proto.log = '';
+              proto.save()
+                .catch(err => {
+                  next(err);
+                })
+            }).catch(err => {
+              next(err);
+            });
+          });
+        } else {
+          Prototype.findOne({idPrototypeMarvelApp: message.payload.idPrototypeMarvelApp})
+            .then(function(proto) {
+              proto.log = message.log;
+              proto.save()
+                .catch(err => {
+                  next(err);
+                });
+            })
+            .catch(err => {
+              next(err);
+            });
+        }
+      });
+
+    childTask.send(message);
+    return res.json({ processed: 'ok' });
   })
   .put('/:request', function(req, res, next) {
     var request = req.request;
