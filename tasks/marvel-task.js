@@ -3,8 +3,8 @@ const { Builder, By, Key, until, promise, Capabilities } = require('selenium-web
 
 const chromeCapabilities = Capabilities.chrome();
 const chromeOptions = {
-    'args': ['--test-type', '--start-maximized', '--disable-plugins', '--headless', '--no-sandbox', '--disable-dev-shm-usage'],
-    // 'args': ['--test-type', '--start-maximized', '--disable-plugins'],
+    //'args': ['--test-type', '--start-maximized', '--disable-plugins', '--headless', '--no-sandbox', '--disable-dev-shm-usage'],
+    'args': ['--test-type', '--start-maximized', '--disable-plugins', '--no-sandbox', '--disable-dev-shm-usage'],
     'prefs': {
       'download.default_directory': '/Users/**/app/output/'
     }

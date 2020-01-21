@@ -2,7 +2,9 @@ Backend for tc-marvelapp connector. Managing marvelapp requests from Topcoder me
 
 
 
-## Version 2.0.2
+## Version 2.0.3
+Updated to support Marvel 3.
+
 Marvelapp Graphql for creating prototypes.
 Selenium for adding marvelapp collaborators.
 
