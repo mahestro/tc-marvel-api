@@ -51,6 +51,7 @@ router
               companyPk: $companyId,
               teamPk: $teamId,
               name: $projectName,
+              visibility: PRIVATE,
               settings: {
                 deviceFrame: $device
               }
