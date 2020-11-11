@@ -30,6 +30,7 @@ function start() {
   var app = express();
 
   mongoose.connect(isProduction ? process.env.DB_URI : 'mongodb://localhost/tc-marvel', {
+    useNewUrlParser: true,
     useMongoClient: true
   });
   mongoose.set('debug', true);
