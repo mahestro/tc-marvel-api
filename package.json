@@ -30,7 +30,7 @@
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
     "method-override": "2.3.5",
-    "mongoose": "^5.4.20",
+    "mongoose": "^5.7.5",
     "mongoose-unique-validator": "1.0.2",
     "morgan": "1.7.0",
     "node-fetch": "^2.2.0",
