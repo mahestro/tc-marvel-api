@@ -29,7 +29,7 @@ function start() {
   // Create global app object
   var app = express();
 
-  mongoose.connect(isProduction ? process.env.MONGODB_URI : 'mongodb://localhost/tc-marvel', {
+  mongoose.connect(isProduction ? process.env.DB_URI : 'mongodb://localhost/tc-marvel', {
     useMongoClient: true
   });
   mongoose.set('debug', true);
